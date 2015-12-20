@@ -58,6 +58,7 @@ senparseFunc = function(articles) {
             previews[i] = ""
         }
     }
+    # strip HTML tags
     previews = gsub("<.*?>", "", previews)
 }
 

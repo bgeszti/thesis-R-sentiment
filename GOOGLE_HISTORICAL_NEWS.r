@@ -45,6 +45,7 @@ parseFunc = function(u, ticker) {
     }
 }
 
+# filter the results to keep only the articles which contains the company name or company code
 filterFunc = function(result, ticker) {
     toMatch = data.frame(AAPL = "AAPL|Apple", BAC = "BAC|Bank of America", GE = "GE|General Electric", 
         AVP = "AVP|Avon", TEVA = "TEVA|Teva", ORCL = "ORCL|Oracle", MS = "MS|Morgan", KO = "KO|Coca", 

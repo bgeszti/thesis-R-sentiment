@@ -17,8 +17,8 @@ sentCalc = function(dat) {
         txt = as.String(txt)
         sent_token_annotator = Maxent_Sent_Token_Annotator(language = language)
         # Return sentences by splitting the text at the markers
-        markers = NLP::annotate(txt, Maxent_Sent_Token_Annotator(language = language)  # Annotator from OpenNLP
-)
+        markers = NLP::annotate(txt, Maxent_Sent_Token_Annotator(language = language)) # Annotator from OpenNLP
+
         txt[markers]
     }
     
@@ -58,7 +58,6 @@ sentCalc = function(dat) {
                 corpus = tm_map(corpus, stemDocument, language = "english")
                 corpus = tm_map(corpus, stripWhitespace)
                 corpus = tm_map(corpus, PlainTextDocument)
-                
                 
                 dtm = DocumentTermMatrix(corpus)
                 dtm = dtm[, colSums(as.matrix(dtm)) > 0]
@@ -154,6 +153,7 @@ sentMain = function() {
     require(tm.lexicon.GeneralInquirer)
     require(edgar)
     require(plyr)
+    
     con = setConnection()
     dateid = format(Sys.Date(), "%Y%m%d")
     # get all news from today which aren't scored yet

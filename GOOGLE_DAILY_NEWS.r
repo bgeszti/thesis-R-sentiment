@@ -9,8 +9,8 @@ library(datamart)
 
 sentCalc = function(dat) {
     
+    # split text at sentence termination marks of the given language
     ToSentences = function(txt, language = "en") {
-        # split text at sentence termination marks of the given language
         if (nchar(txt) == 0) {
             return("")
         }
@@ -22,9 +22,9 @@ sentCalc = function(dat) {
         txt[markers]
     }
     
+    # Split every document in the corpus into sentences and return a new corpus with all the
+    # sentences as individual documents.  Extract the text from each document in the corpus.
     CorpusToSentences = function(corpus) {
-        # Split every document in the corpus into sentences and return a new corpus with all the
-        # sentences as individual documents.  Extract the text from each document in the corpus.
         tx = lapply(corpus, "[[", "content")
         # Convert the text
         sentences = lapply(tx, ToSentences)

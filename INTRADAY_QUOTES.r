@@ -1,3 +1,4 @@
+# get quotes from yahoo as csv, then store it in the quotes table
 GetData <- function() {
     # establish connection using ROracle
     require("ROracle")

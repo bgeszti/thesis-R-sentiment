@@ -1,5 +1,6 @@
 Sys.setenv(TZ = "GMT")
 library(ROracle)
+library(xts)
 
 # Establish the connection
 setConnection = function()

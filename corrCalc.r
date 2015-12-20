@@ -40,7 +40,7 @@ INNER JOIN WEEKDAYS w ON s.DAY_ID=w.ID
 INNER JOIN COMPANY_NEWS c ON s.NEWS_ID=c.ID
 where s.DAY_ID BETWEEN '20150928' AND '20151204' AND w.ISHOLIDAY=0 
 AND c.DATASOURCE='Google'
-and to_char(c.RELEASE_TIME, 'HH24:MI:SS') between '07:30:00' and '16:30:00"
+and to_char(c.RELEASE_TIME, 'HH24:MI:SS') between '07:30:00' and '16:30:00'"
 
 # Aggregate the sentiment scores by day using the sentCalc function
 scores = na.omit(dbGetQuery(con, sent_sql))

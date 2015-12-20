@@ -14,6 +14,7 @@ parseFunc = function(u, ticker) {
     
     result <- tryCatch({
         htmlURL = htmlParse(u)
+        # parse the RSS tags with handling some invalid markup
         links = xpathSApply(htmlURL, "//item/link/following-sibling::text()", xmlValue)
         titles = xpathSApply(htmlURL, "//item/title", xmlValue)
         previews = xpathSApply(htmlURL, "//item/description", xmlValue)
@@ -65,8 +66,9 @@ linkparseFunc = function(link) {
         })
         print(links[i])
         if (!(is.null(content))) {
-            # extract content from article
+            # extract content from article with boilerpipeR
             article = ArticleExtractor(content)
+            # convert the text encoding to ascii, translating any unicode character to the ascii variant
             article <- iconv(article, "UTF-8", "ASCII//TRANSLIT")
             # if no results given by getURL(), try again once
             if (is.na(article)) {
@@ -87,6 +89,7 @@ linkparseFunc = function(link) {
             articles[i] = ""
         }
     }
+    # strip HTML tags
     gsub("<.*?>", "", articles)
 }
 
@@ -119,7 +122,7 @@ for (day in dates) {
     
     formattedDate = format(as.Date(day, origin = "1970/01/01"), "%Y-%m-%d")
     for (ticker in tickers) {
-        # create links
+        # get finance news links from google in RSS format
         u = paste("http://www.google.com/finance/company_news?q=", ticker, "&output=rss&startdate=", 
             formattedDate, "&enddate=", formattedDate, "&num=100", sep = "")
         print(u)

@@ -1,14 +1,15 @@
 GetHistoricalData <- function() {
-    # establish connection using ROracle
+    # establish database connection using ROracle
     require("ROracle")
     require("chron")
-    
+
     tickers = c("AAPL", "BAC", "GE", "AVP", "TEVA", "ORCL", "MS", "KO", "MCD", "PG")
     Sys.setenv(TZ = "GMT")
-    
+
     # download data and put in the DB
     for (ticker in tickers) {
-        sAddress <- paste("http://real-chart.finance.yahoo.com/table.csv?s=", ticker, "&a=11&b=08&c=2015&d=11&e=17&f=2015&g=d&ignore=.csv", 
+        # get data from 2015-12-08 to 2015-12-17
+        sAddress <- paste("http://real-chart.finance.yahoo.com/table.csv?s=", ticker, "&a=11&b=08&c=2015&d=11&e=17&f=2015&g=d&ignore=.csv",
             sep = "")
         dailyQuotes <- read.csv(sAddress, header = T, stringsAsFactors = FALSE)
         dailyQuotes$Date = as.POSIXct(dailyQuotes$Date, format = "%Y-%m-%d")
@@ -21,7 +22,7 @@ GetHistoricalData <- function() {
         port <- 1521
         svc <- ""
         # create connection string
-        connect.string <- paste("(DESCRIPTION=", "(ADDRESS=(PROTOCOL=tcp)(HOST=", host, ")(PORT=", 
+        connect.string <- paste("(DESCRIPTION=", "(ADDRESS=(PROTOCOL=tcp)(HOST=", host, ")(PORT=",
             port, "))", "(CONNECT_DATA=(SERVICE_NAME=", svc, ")))", sep = "")
         con <- dbConnect(drv, username = "", password = "", dbname = connect.string)
         rs <- dbSendQuery(con, sql, data = dailyQuotes)
@@ -30,4 +31,4 @@ GetHistoricalData <- function() {
         dbDisconnect(con)
     }
 }
-GetHistoricalData() 
+GetHistoricalData()

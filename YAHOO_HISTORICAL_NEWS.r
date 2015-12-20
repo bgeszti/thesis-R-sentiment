@@ -75,8 +75,9 @@ linkparseFunc = function(link) {
         })
         print(links[i])
         if (!(is.null(content))) {
-            # extract content from article
+            # extract content from article with boilerpipeR
             article = ArticleExtractor(content)
+            # convert the text encoding to ascii, translating any unicode character to the ascii variant
             article <- iconv(article, "UTF-8", "ASCII//TRANSLIT")
             # if no results given by getURL(), try again once
             if (is.na(article)) {
@@ -97,6 +98,7 @@ linkparseFunc = function(link) {
             articles[i] = ""
         }
     }
+    # strip HTML tags
     gsub("<.*?>", "", articles)
 }
 
@@ -124,12 +126,13 @@ loadFunc = function(result) {
 Sys.setenv(TZ = "GMT")
 dsource = "Yahoo"
 tickers = c("AAPL", "BAC", "GE", "AVP", "TEVA", "ORCL", "MS", "KO", "MCD", "PG")
+# create sequence of dates for the given date interval
 dates = seq(as.Date("2015/12/08"), as.Date("2015/12/18"), "days")
 
 for (day in dates) {
     formattedDate = format(as.Date(day, origin = "1970/01/01"), "%Y-%m-%d")
     for (ticker in tickers) {
-        # create links
+        # get finance news links from yahoo in standard HTML format
         u = paste("http://finance.yahoo.com/q/h?s=", ticker, "&t=", formattedDate, sep = "")
         print(u)
         # calling yahooparseFunc to parse required elements from page 'u'

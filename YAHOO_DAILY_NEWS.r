@@ -37,7 +37,7 @@ sentCalc = function(dat) {
         corpus = Corpus(VectorSource(filteredSentences))
     }
     
-    # Preprocess documents, score them using the Harvard GI and Bing Liu
+    # Preprocess documents, score them using the Harvard GI (dictionary = 1) and Bing Liu (dictionary = 0)
     # dictionaries: pos:1, neg:-1, neutral:0
     scoreCalc = function(dat, id, dictionary) {
         # Loading the Bing Liu lexicon
@@ -52,6 +52,7 @@ sentCalc = function(dat) {
             corp = Corpus(VectorSource(dat[i]))
             corpus = CorpusToSentences(corp)
             if (summary(corpus)[1] != 0) {
+                # remove all uneccessary content like special characters, stopwords and apply stemming
                 corpus = tm_map(corpus, removePunctuation, preserve_intra_word_dashes = TRUE)
                 corpus = tm_map(corpus, removeWords, stopwords("english"))
                 corpus = tm_map(corpus, removeNumbers)
@@ -84,7 +85,7 @@ sentCalc = function(dat) {
                 if (is.nan(sentiment.score)) {
                   sentiment.score = 0
                 }
-            } else {
+            } else { # handling empty documents
                 sentiment.score = 0
                 pos.words = NULL
                 neg.words = NULL
@@ -103,18 +104,25 @@ sentCalc = function(dat) {
         
     }
     
+    # Harvard GI scores for fulltext
     out = scoreCalc(dat$FULLTEXT, dat$ID, 1)
     df1 = out[[1]]
     gfp = out[[2]]
     gfn = out[[3]]
+
+    # Harvard GI scores for preview
     out = scoreCalc(dat$PREVIEW, dat$ID, 1)
     df2 = out[[1]]
     gpp = out[[2]]
     gpn = out[[3]]
+
+    # Bing Liu scores for fulltext
     out = scoreCalc(dat$FULLTEXT, dat$ID, 0)
     df3 = out[[1]]
     bfp = out[[2]]
     bfn = out[[3]]
+
+    # Bing Liu scores for preview
     out = scoreCalc(dat$PREVIEW, dat$ID, 0)
     df4 = out[[1]]
     bpp = out[[2]]
@@ -125,6 +133,7 @@ sentCalc = function(dat) {
     for (i in 1:length(dfs)) {
         colnames(dfs[[i]]) = colnames
     }
+    # join all scores for insertion into NEWS_SENTIMENTS table
     merged = join_all(list(dfs[[1]], dfs[[2]], dfs[[3]], dfs[[4]], gfp, gfn, gpp, 
         gpn, bfp, bfn, bpp, bpn), by = "id", type = "left")
     return(merged)
@@ -158,6 +167,7 @@ sentMain = function() {
     require(plyr)
     con = setConnection()
     dateid = format(Sys.Date(), "%Y%m%d")
+    # get all news from today which aren't scored yet
     dat_sql = paste("SELECT ID,PREVIEW,FULLTEXT,SOURCE_URL FROM COMPANY_NEWS  \n\tWHERE DAY_ID='", 
         dateid, "'AND COMPANY_NEWS.ID NOT IN \n\t(SELECT NEWS_ID FROM NEWS_SENTIMENTS WHERE DAY_ID='", 
         dateid, "')", sep = "")
@@ -253,8 +263,9 @@ linkparseFunc = function(link) {
         })
         print(links[i])
         if (!(is.null(content))) {
-            # extract content from article
+            # extract content from article with boilerpipeR
             article = ArticleExtractor(content)
+            # convert the text encoding to ascii, translating any unicode character to the ascii variant
             article <- iconv(article, "UTF-8", "ASCII//TRANSLIT")
             # if no results given by getURL(), try again once
             if (is.na(article)) {
@@ -275,6 +286,7 @@ linkparseFunc = function(link) {
             articles[i] = ""
         }
     }
+    # strip HTML tags
     gsub("<.*?>", "", articles)
 }
 
@@ -309,7 +321,7 @@ tickers = c("AAPL", "BAC", "GE", "AVP", "TEVA", "ORCL", "MS", "KO", "MCD", "PG")
 day = as.Date(Sys.Date())
 
 for (ticker in tickers) {
-    # create links
+    # get finance news links from yahoo in standard HTML format
     u = paste("http://finance.yahoo.com/q/h?s=", ticker, "&t=", day, sep = "")
     print(u)
     # calling yahooparseFunc to parse required elements from page 'u'

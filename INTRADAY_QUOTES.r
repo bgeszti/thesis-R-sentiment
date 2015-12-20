@@ -10,7 +10,7 @@ GetData <- function() {
     connect.string <- paste("(DESCRIPTION=", "(ADDRESS=(PROTOCOL=tcp)(HOST=", host, ")(PORT=", 
         port, "))", "(CONNECT_DATA=(SERVICE_NAME=", svc, ")))", sep = "")
     con <- dbConnect(drv, username = "", password = "", dbname = connect.string)
-    # download data and put in the DB
+    # download data in csv format and put in the DB
     
     sAddress <- paste("http://download.finance.yahoo.com/d/quotes.csv?s=%40%5EDJI,AAPL,BAC,GE,AVP,TEVA,ORCL,MS,KO,MCD,PG&f=sd1t1l1k3ohgbav", 
         sep = "")

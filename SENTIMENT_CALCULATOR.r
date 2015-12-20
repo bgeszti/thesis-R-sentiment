@@ -27,8 +27,8 @@ sentCalc = function(dat) {
         corpus = Corpus(VectorSource(filteredSentences))
     }
     
-    # Preprocess documents, score them using the Harvard GI and Bing Liu dictionaries: pos:1,
-    # neg:-1, neutral:0
+    # Preprocess documents, score them using the Harvard GI (dictionary = 1) and Bing Liu (dictionary = 0) dictionaries
+    # pos:1, neg:-1, neutral:0
     scoreCalc = function(dat, id, dictionary) {
         # Loading the Bing Liu lexicon
         neg.terms = read.csv("negative_words.csv", stringsAsFactors = FALSE)
@@ -42,6 +42,7 @@ sentCalc = function(dat) {
             corp = Corpus(VectorSource(dat[i]))
             corpus = CorpusToSentences(corp)
             if (summary(corpus)[1] != 0) {
+                # remove all uneccessary content like special characters, stopwords and apply stemming
                 corpus = tm_map(corpus, removePunctuation, preserve_intra_word_dashes = TRUE)
                 corpus = tm_map(corpus, removeWords, stopwords("english"))
                 corpus = tm_map(corpus, removeNumbers)
@@ -74,7 +75,7 @@ sentCalc = function(dat) {
                 if (is.nan(sentiment.score)) {
                   sentiment.score = 0
                 }
-            } else {
+            } else { # handling empty documents
                 sentiment.score = 0
                 pos.words = NULL
                 neg.words = NULL
@@ -92,19 +93,26 @@ sentCalc = function(dat) {
         return(out)
         
     }
-    
+
+    # Harvard GI scores for fulltext
     out = scoreCalc(dat$FULLTEXT, dat$ID, 1)
     df1 = out[[1]]
     gfp = out[[2]]
     gfn = out[[3]]
+
+    # Harvard GI scores for preview
     out = scoreCalc(dat$PREVIEW, dat$ID, 1)
     df2 = out[[1]]
     gpp = out[[2]]
     gpn = out[[3]]
+
+    # Bing Liu scores for fulltext
     out = scoreCalc(dat$FULLTEXT, dat$ID, 0)
     df3 = out[[1]]
     bfp = out[[2]]
     bfn = out[[3]]
+
+    # Bing Liu scores for fulltext
     out = scoreCalc(dat$PREVIEW, dat$ID, 0)
     df4 = out[[1]]
     bpp = out[[2]]
@@ -115,6 +123,7 @@ sentCalc = function(dat) {
     for (i in 1:length(dfs)) {
         colnames(dfs[[i]]) = colnames
     }
+    # join all scores for insertion into NEWS_SENTIMENTS table
     merged = join_all(list(dfs[[1]], dfs[[2]], dfs[[3]], dfs[[4]], gfp, gfn, gpp, gpn, bfp, 
         bfn, bpp, bpn), by = "id", type = "left")
     return(merged)
@@ -147,20 +156,23 @@ sentMain = function() {
     require(edgar)
     require(plyr)
     con = setConnection()
+    # check if there is at least one news for the given day
     ids = dbGetQuery(con, "SELECT DISTINCT DAY_ID FROM COMPANY_NEWS WHERE DAY_ID='20151218' AND TICKER='AAPL' ORDER BY DAY_ID")
     for (i in 1:nrow(ids)) {
         dateid = ids[i, ]
         print(dateid)
         
+        # filtering unique news by source_url
         dat_sql = paste("SELECT ID,PREVIEW,FULLTEXT,SOURCE_URL FROM COMPANY_NEWS where ID IN (SELECT MIN(ID) FROM COMPANY_NEWS\n        where DAY_ID='", 
             dateid, "' AND TICKER='AAPL' GROUP BY SOURCE_URL)", sep = "")
         dat = na.omit(dbGetQuery(con, dat_sql))
         result = sentCalc(dat)
+        # save the calculated results
         result = cbind(result, dateid)
         load_sql = "INSERT into NEWS_SENTIMENTS (NEWS_ID,GFS,GPS,BFS,BPS,GFPW,GFNW,GPPW,GPNW,BFPW,BFNW,BPPW,BPNW,DAY_ID) VALUES (:1,:2,:3,:4,:5,:6,:7,:8,:9,:10,:11,:12,:13,:14)"
         rs = dbSendQuery(con, load_sql, data = result)
         dbClearResult(rs)
-        # commint results
+        # commit results
         dbCommit(con)
         print("Data are loaded")
         # closing the connection

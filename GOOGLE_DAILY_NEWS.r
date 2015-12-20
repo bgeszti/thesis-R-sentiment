@@ -222,6 +222,7 @@ filterFunc = function(result, ticker) {
     rowIndices = grep(pattern, result[, 2])
 }
 
+# cleans the link, downloads the article and extract the main content from the web page as plain text
 linkparseFunc = function(link) {
     articles = c()
     links = gsub("[\r\n]", "", link)

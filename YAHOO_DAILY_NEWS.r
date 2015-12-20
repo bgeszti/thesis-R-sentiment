@@ -305,6 +305,7 @@ loadFunc = function(result) {
     dbDisconnect(con)
 }
 
+# compare against the already downloaded version of the articles
 updateFilter = function(result, ticker, day) {
     con = setConnection()
     dayid = format(day, "%Y%m%d")

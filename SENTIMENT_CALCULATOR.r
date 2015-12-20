@@ -2,6 +2,7 @@ sentCalc = function(dat) {
     
     
     ToSentences = function(txt, language = "en") {
+        # split text at sentence termination marks of the given language
         if (nchar(txt) == 0) {
             return("")
         }
@@ -129,6 +130,7 @@ sentCalc = function(dat) {
     return(merged)
 }
 
+# connect to the database server
 setConnection = function() {
     drv = dbDriver("Oracle")
     host = ""

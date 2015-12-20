@@ -7,7 +7,7 @@ library(openNLP)
 library(NLP)
 library(datamart)
 
-
+# parse the yahoo webpage, extracting the relevant data using xpath queries
 yahooparseFunc = function(u, ticker, formattedDate) {
     result <- tryCatch({
         # building HTML tree for web page 'u' and parse the components using xpathSApply
@@ -62,7 +62,7 @@ senparseFunc = function(articles) {
     previews = gsub("<.*?>", "", previews)
 }
 
-
+# cleans the link, downloads the article and extract the main content from the web page as plain text
 linkparseFunc = function(link) {
     articles = c()
     links = gsub("[\r\n]", "", link)
@@ -103,6 +103,7 @@ linkparseFunc = function(link) {
     gsub("<.*?>", "", articles)
 }
 
+# load the data into database
 loadFunc = function(result) {
     drv <- dbDriver("Oracle")
     host <- ""

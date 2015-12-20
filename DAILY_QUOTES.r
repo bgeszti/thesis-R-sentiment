@@ -1,5 +1,6 @@
 library(quantmod)
 library(ROracle)
+# connect to the database server
 setConnection = function() {
     drv = dbDriver("Oracle")
     host = ""

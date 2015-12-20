@@ -113,10 +113,9 @@ sentScore = as.vector(merged[, 2])
 ccf(Return, sentScore, lag.max = 3)
 
 # Calculate Granger Causality
-library(MTS)
-# AUTOMATICALLY SEARCH FOR THE MOST SIGNIFICANT RESULT
-ccm(merged, lags = 5, level = TRUE, output = T)
-mq(merged, lag = 10, adj = 1)
-GrangerTest(merged, p = 1, include.mean = T, locInput = c(1))
+library(lmtest)
+Return <- na.omit(diff(merged[,1]))
+Score <- na.omit(diff(merged[,2]))
+grangertest(Return ~ Score, order=1)
 
 

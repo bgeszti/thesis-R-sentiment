@@ -9,8 +9,8 @@ library(datamart)
 
 sentCalc = function(dat) {
     
-    
     ToSentences = function(txt, language = "en") {
+        # split text at sentence termination marks of the given language
         if (nchar(txt) == 0) {
             return("")
         }
@@ -213,6 +213,7 @@ parseFunc = function(u, ticker) {
     }
 }
 
+
 filterFunc = function(result, ticker) {
     toMatch = data.frame(AAPL = "AAPL|Apple", BAC = "BAC|Bank of America", GE = "GE|General Electric", 
         AVP = "AVP|Avon", TEVA = "TEVA|Teva", ORCL = "ORCL|Oracle", MS = "MS|Morgan", KO = "KO|Coca", 
@@ -260,6 +261,8 @@ linkparseFunc = function(link) {
     # strip HTML tags
     gsub("<.*?>", "", articles)
 }
+
+# connect to the database server
 setConnection = function() {
     drv = dbDriver("Oracle")
     host = ""
@@ -270,7 +273,7 @@ setConnection = function() {
     con = dbConnect(drv, username = "", password = "", dbname = connect.string)
 }
 
-
+# load the data into database
 loadFunc = function(result) {
     con = setConnection()
     # create connection with given driver and connection string create sql statement

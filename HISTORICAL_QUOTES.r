@@ -1,3 +1,4 @@
+# gets historical quotes from yahoo, then stores it in the daily_quotes table
 GetHistoricalData <- function() {
     # establish database connection using ROracle
     require("ROracle")

@@ -38,10 +38,9 @@ yahooparseFunc = function(u, ticker, formattedDate) {
     }
 }
 
-
+# extract the first five sentences from the articles
 senparseFunc = function(articles) {
     sent_token_annotator <- Maxent_Sent_Token_Annotator()
-    # extract the first five sentences from the articles
     previews = c()
     for (i in 1:length(articles)) {
         if (articles[i] != "") {

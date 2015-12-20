@@ -17,7 +17,9 @@ con = setConnection()
 # Loading the quantmod package to handle xts objects and charting
 library(quantmod)
 # Downloading stock price data
-dat_sql = "SELECT DISTINCT DATUM,OP,CL,VO FROM DAILY_QUOTES where TICKER='AAPL' \nAND DAY_ID BETWEEN '20150924' AND '20151204' \nORDER BY DATUM"
+dat_sql = "SELECT DISTINCT DATUM,OP,CL,VO FROM DAILY_QUOTES where TICKER='AAPL' 
+AND DAY_ID BETWEEN '20150924' AND '20151204' 
+ORDER BY DATUM"
 stocks = na.omit(dbGetQuery(con, dat_sql))
 # Create an xts time series object from the dataframe
 stocks.xts = xts(stocks[, -1], order.by = stocks$DATUM)

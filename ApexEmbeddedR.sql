@@ -1,16 +1,14 @@
-#creates a Candlechart
+#creates a chart displaying the daily last trade prices
 BEGIN
-SYS.RQSCRIPTDROP('CandleChart');
-SYS.RQSCRIPTCREATE('CandleChart',
+SYS.RQSCRIPTDROP('Chart');
+SYS.RQSCRIPTCREATE('Chart',
 'function(stocks)
 {
 library(xts)
 library(quantmod)
-rownames(stocks)=stocks$DATUM
-stocks.xts =xts(stocks[,-1], order.by=stocks$DATUM)
-colnames(stocks.xts) <- c("open", "high", "low", "close","volume")
-candleChart(stocks.xts,theme="white", major.ticks="days",type="candles",subset="last 10 weeks")}');
-END
+trades =xts(stocks[,-1], order.by=stocks$LT_TIME)
+candleChart(trades,theme="white", major.ticks="hours",type="auto",show.grid = NULL)}');
+END;
 
 #creates a Technical chart
 BEGIN

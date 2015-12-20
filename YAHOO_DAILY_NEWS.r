@@ -140,8 +140,8 @@ sentCalc = function(dat) {
     return(merged)
 }
 
-# connect to the database server
 setConnection = function() {
+    # connect to the database server
     drv = dbDriver("Oracle")
     host = ""
     port = 1521
@@ -189,8 +189,8 @@ sentMain = function() {
     }
 }
 
-# parse the yahoo webpage, extracting the relevant data using xpath queries
 yahooparseFunc = function(u, ticker, formattedDate) {
+    # parse the yahoo webpage, extracting the relevant data using xpath queries
     result <- tryCatch({
         # building HTML tree for web page 'u' and parse the components using xpathSApply
         htmlURL = htmlParse(u)
@@ -251,8 +251,8 @@ senparseFunc = function(articles) {
     previews = gsub("<.*?>", "", previews)
 }
 
-# cleans the link, downloads the article and extract the main content from the web page as plain text
 linkparseFunc = function(link) {
+    # cleans the link, downloads the article and extract the main content from the web page as plain text
     articles = c()
     links = gsub("[\r\n]", "", link)
     
@@ -292,8 +292,8 @@ linkparseFunc = function(link) {
     gsub("<.*?>", "", articles)
 }
 
-# load the data into database
 loadFunc = function(result) {
+    # load the data into database
     con = setConnection()
     # create sql statement
     sql = "INSERT into COMPANY_NEWS (DAY_ID,SOURCE_URL,TITLE,PREVIEW,RELEASE_TIME,FULLTEXT,TICKER,DATASOURCE) VALUES (:1,:2,:3,:4,:5,:6,:7,:8)"
